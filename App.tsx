@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { View, StyleSheet } from 'react-native';
+import OTPInputs from "./src/OTPInputs";
 
 export default class App extends Component {
   render() {
     return (
       <View style={styles.container}>
-        {/* <OtpInputs
-          handleChange={(code) => console.log(code)}
-          numberOfInputs={6}
-        /> */}
+        <OTPInputs
+          // handleChange={(code) => console.log(code)}
+          numberOfInputs={4}
+        />
       </View>
     );
   }
