@@ -1,13 +1,6 @@
-import * as Clipboard from "expo-clipboard";
-import React, { useCallback, useState } from "react";
-import {
-  View,
-  TextInput,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
-  Button,
-  Text,
-} from "react-native";
+import { getStringAsync } from "expo-clipboard";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData } from "react-native";
 import tw from "twrnc";
 
 interface Props {
@@ -15,10 +8,10 @@ interface Props {
 }
 
 export default function OTPInputs({ numberOfInputs }: Props) {
+  const [direction, setDirection] = useState<"forward" | "back">("forward");
   const textInputRefs = Array.from({ length: numberOfInputs }).map(() =>
     React.createRef<TextInput>()
   );
-  const [copiedText, setCopiedText] = useState("");
   const [pin, setPin] = useState<string[]>(Array.from({ length: numberOfInputs }).map(() => ""));
   const onKeyPress = useCallback(
     (index) =>
@@ -29,30 +22,50 @@ export default function OTPInputs({ numberOfInputs }: Props) {
             .includes(keyValue)
         ) {
           setPin((value) => [...value.slice(0, index), keyValue, ...value.slice(index + 1)]);
-          if (index + 1 < numberOfInputs) {
-            textInputRefs[index + 1].current?.focus();
-          }
+          setDirection("forward");
         } else if (keyValue === "Backspace") {
           setPin((value) => [
             ...value.slice(0, index),
             ...Array.from({ length: numberOfInputs - index }).map(() => ""),
           ]);
-          if (index - 1 >= 0) {
-            textInputRefs[index - 1].current?.focus();
-          }
+          setDirection("back");
         }
       },
-    [numberOfInputs, textInputRefs]
+    [numberOfInputs]
   );
 
-  const copyToClipboard = async () => {
-    await Clipboard.setStringAsync("hello world");
-  };
+  useEffect(() => {
+    let activeIndex = -1;
+    for (let index = 0; index < pin.length; index++) {
+      const value = pin[index];
+      if (value !== "") {
+        activeIndex = index;
+      } else {
+        break;
+      }
+    }
+    if (direction === "back" && activeIndex >= 0 && activeIndex <= numberOfInputs - 1) {
+      textInputRefs[activeIndex].current?.focus();
+    } else if (activeIndex + 1 >= 0 && activeIndex + 1 <= numberOfInputs - 1) {
+      textInputRefs[activeIndex + 1].current?.focus();
+    }
+  }, [direction, numberOfInputs, pin, textInputRefs]);
 
-  const fetchCopiedText = async () => {
-    const text = await Clipboard.getStringAsync();
-    setCopiedText(text);
-  };
+  const onChangeText = useCallback(
+    (index) => (text: string) => {
+      getStringAsync().then((textInClipboard) => {
+        if (
+          textInClipboard.length === numberOfInputs &&
+          /[0-9]{4}/g.test(textInClipboard) &&
+          text === textInClipboard &&
+          index === 0
+        ) {
+          setPin(textInClipboard.split(""));
+        }
+      });
+    },
+    [numberOfInputs]
+  );
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -64,19 +77,15 @@ export default function OTPInputs({ numberOfInputs }: Props) {
             keyboardType="numeric"
             textAlign="center"
             selectionColor="#04825C"
-            maxLength={1}
             ref={value}
             autoFocus={index === 0}
-            selectTextOnFocus
             onKeyPress={onKeyPress(index)}
+            onChangeText={onChangeText(index)}
             returnKeyType={index === numberOfInputs - 1 ? "done" : "next"}
             value={pin[index].toString()}
           />
         ))}
       </View>
-      <Button title="Click here to copy to Clipboard" onPress={copyToClipboard} />
-      <Button title="View copied text" onPress={fetchCopiedText} />
-      <Text>{copiedText}</Text>
     </View>
   );
 }
