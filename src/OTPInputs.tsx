@@ -74,9 +74,9 @@ export default function OTPInputs({ numberOfInputs }: Props) {
           />
         ))}
       </View>
-      {/* <Button title="Click here to copy to Clipboard" onPress={copyToClipboard} />
+      <Button title="Click here to copy to Clipboard" onPress={copyToClipboard} />
       <Button title="View copied text" onPress={fetchCopiedText} />
-      <Text>{copiedText}</Text> */}
+      <Text>{copiedText}</Text>
     </View>
   );
 }
