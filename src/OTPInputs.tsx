@@ -1,5 +1,13 @@
+import * as Clipboard from "expo-clipboard";
 import React, { useCallback, useState } from "react";
-import { View, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData } from "react-native";
+import {
+  View,
+  TextInput,
+  NativeSyntheticEvent,
+  TextInputKeyPressEventData,
+  Button,
+  Text,
+} from "react-native";
 import tw from "twrnc";
 
 interface Props {
@@ -10,6 +18,7 @@ export default function OTPInputs({ numberOfInputs }: Props) {
   const textInputRefs = Array.from({ length: numberOfInputs }).map(() =>
     React.createRef<TextInput>()
   );
+  const [copiedText, setCopiedText] = useState("");
   const [pin, setPin] = useState<string[]>(Array.from({ length: numberOfInputs }).map(() => ""));
   const onKeyPress = useCallback(
     (index) =>
@@ -35,24 +44,39 @@ export default function OTPInputs({ numberOfInputs }: Props) {
       },
     [numberOfInputs, textInputRefs]
   );
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync("hello world");
+  };
+
+  const fetchCopiedText = async () => {
+    const text = await Clipboard.getStringAsync();
+    setCopiedText(text);
+  };
+
   return (
-    <View style={tw`w-full flex-row justify-center items-center `}>
-      {textInputRefs.map((value, index) => (
-        <TextInput
-          key={`textinput-${index}`}
-          style={tw`mx-2.5 h-12 w-12 border-2 rounded-md border-[#04825C]`}
-          keyboardType="numeric"
-          textAlign="center"
-          selectionColor="#04825C"
-          maxLength={1}
-          ref={value}
-          autoFocus={index === 0}
-          selectTextOnFocus
-          onKeyPress={onKeyPress(index)}
-          returnKeyType={index === numberOfInputs - 1 ? "done" : "next"}
-          value={pin[index].toString()}
-        />
-      ))}
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={tw`w-full flex-row justify-center items-center `}>
+        {textInputRefs.map((value, index) => (
+          <TextInput
+            key={`textinput-${index}`}
+            style={tw`mx-2.5 h-12 w-12 border-2 rounded-md border-[#04825C] font-bold text-xl`}
+            keyboardType="numeric"
+            textAlign="center"
+            selectionColor="#04825C"
+            maxLength={1}
+            ref={value}
+            autoFocus={index === 0}
+            selectTextOnFocus
+            onKeyPress={onKeyPress(index)}
+            returnKeyType={index === numberOfInputs - 1 ? "done" : "next"}
+            value={pin[index].toString()}
+          />
+        ))}
+      </View>
+      {/* <Button title="Click here to copy to Clipboard" onPress={copyToClipboard} />
+      <Button title="View copied text" onPress={fetchCopiedText} />
+      <Text>{copiedText}</Text> */}
     </View>
   );
 }
