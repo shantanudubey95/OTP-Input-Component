@@ -8,10 +8,11 @@ interface Props {
 
   export default function OTPInputs({ numberOfInputs }: Props) {
 
-    const firstBox = useRef(null);
-    const secondBox = useRef(null);
-    const thirdBox = useRef(null);
-    const fourthBox = useRef(null);
+    const [otp, setOtp] = useState([]);
+    const firstInput = useRef(null);
+    const secondInput = useRef(null);
+    const thirdInput = useRef(null);
+    const fourthInput = useRef(null);
 
     return (
         <View style={tw`w-full flex-row justify-center items-center ` }>
@@ -21,12 +22,12 @@ interface Props {
                 textAlign='center'
                 selectionColor={"#04825C"}
                 maxLength={1}
-                ref={firstBox}
+                ref={firstInput}
                 autoFocus={true}
                 returnKeyType="next"
-                onSubmitEditing={() => { secondBox.current.focus() }}
-                blurOnSubmit={false}
-                // onChangeText={onChangeText}
+                onChangeText={(text)=> {
+                    text && secondInput.current.focus()
+                }}
                 // value={text}
                 />
             <TextInput 
@@ -35,10 +36,11 @@ interface Props {
                 textAlign='center'
                 selectionColor={"#04825C"}
                 maxLength={1}
-                ref={secondBox}
                 returnKeyType="next"
-                onSubmitEditing={() => thirdBox.current.focus()}
-                // onChangeText={onChangeText}
+                ref={secondInput}
+                onChangeText={(text)=> {
+                    text ? thirdInput.current.focus() : firstInput.current.focus()
+                }}
                 // value={text}
                 />
             <TextInput 
@@ -47,11 +49,11 @@ interface Props {
                 textAlign='center'
                 selectionColor={"#04825C"}
                 maxLength={1}
-                ref={thirdBox}  
                 returnKeyType="next"
-                onSubmitEditing={() => fourthBox.current.focus()}
-                
-                // onChangeText={onChangeText}
+                ref={thirdInput}  
+                onChangeText={(text)=> {
+                    text ? fourthInput.current.focus() : secondInput.current.focus()
+                }}
                 // value={text}
                 />
             <TextInput 
@@ -60,9 +62,11 @@ interface Props {
                 textAlign='center'
                 selectionColor={"#04825C"}
                 maxLength={1}
-                ref={fourthBox}
+                ref={fourthInput}
                 returnKeyType="done"
-                // onChangeText={onChangeText}
+                onChangeText={(text)=> {
+                    !text && thirdInput.current.focus()
+                }}
                 // value={text}
                 />
         </View>
