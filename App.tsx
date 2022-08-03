@@ -1,7 +1,8 @@
-import React, { Component } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { Component } from "react";
+import { View } from "react-native";
+import tw from "twrnc";
+
 import OTPInputs from "./src/OTPInputs";
-import tw from 'twrnc';
 
 export default class App extends Component {
   render() {
@@ -15,5 +16,3 @@ export default class App extends Component {
     );
   }
 }
-
-
