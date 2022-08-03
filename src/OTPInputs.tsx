@@ -68,24 +68,24 @@ export default function OTPInputs({ numberOfInputs }: Props) {
   );
 
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <View style={tw`w-full flex-row justify-center items-center `}>
-        {textInputRefs.map((value, index) => (
-          <TextInput
-            key={`textinput-${index}`}
-            style={tw`mx-2.5 h-12 w-12 border-2 rounded-md border-[#04825C] font-bold text-xl`}
-            keyboardType="numeric"
-            textAlign="center"
-            selectionColor="#04825C"
-            ref={value}
-            autoFocus={index === 0}
-            onKeyPress={onKeyPress(index)}
-            onChangeText={onChangeText(index)}
-            returnKeyType={index === numberOfInputs - 1 ? "done" : "next"}
-            value={pin[index].toString()}
-          />
-        ))}
-      </View>
+
+    <View style={tw`w-full flex-row justify-center items-center `}>
+      {textInputRefs.map((value, index) => (
+        <TextInput
+          key={`textinput-${index}`}
+          style={tw`mx-2.5 h-12 w-12 border-2 rounded-md border-[#04825C] font-bold text-xl`}
+          keyboardType="numeric"
+          textAlign="center"
+          selectionColor="#04825C"
+          ref={value}
+          autoFocus={index === 0}
+          onKeyPress={onKeyPress(index)}
+          onChangeText={onChangeText(index)}
+          returnKeyType={index === numberOfInputs - 1 ? "done" : "next"}
+          value={pin[index].toString()}
+        />
+      ))}
     </View>
+
   );
 }
